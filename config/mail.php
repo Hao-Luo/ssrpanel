@@ -29,7 +29,7 @@ return [
     |
     */
 
-    'host' => 'smtp.exmail.qq.com',
+    'host' => 'smtp-mail.outlook.com',
 
     /*
     |--------------------------------------------------------------------------
@@ -42,7 +42,7 @@ return [
     |
     */
 
-    'port' => 465,
+    'port' => 587,
 
     /*
     |--------------------------------------------------------------------------
@@ -56,8 +56,8 @@ return [
     */
 
     'from' => [
-        'address' => 'xxx@qq.com',
-        'name' => '重置密码',
+        'address' => 'zhujixinxi@outlook.com',
+        'name' => 'Info',
     ],
 
     /*
@@ -71,7 +71,7 @@ return [
     |
     */
 
-    'encryption' => 'ssl',
+    'encryption' => 'tls',
 
     /*
     |--------------------------------------------------------------------------
@@ -84,9 +84,9 @@ return [
     |
     */
 
-    'username' => 'xxx@qq.com',
+    'username' => 'zhujixinxi@outlook.com',
 
-    'password' => 'xxxxxx',
+    'password' => 'K+)L}DfVac{X&3-m',
 
     /*
     |--------------------------------------------------------------------------

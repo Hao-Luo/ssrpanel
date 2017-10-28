@@ -211,7 +211,7 @@ class UserController extends BaseController
             $ss_str = '';
             $ss_str .= $user->method . ':' . $user->passwd . '@';
             $ss_str .= $node->server . ':' . $user->port;
-            $ss_str = $this->base64url_encode($ss_str) . '#' . 'VPN';
+            $ss_str = $this->base64url_encode($ss_str);
             $ss_scheme = 'ss://' . $ss_str;
 
             // 生成文本配置信息
@@ -394,7 +394,7 @@ TXT;
         $obj->fuid = 0;
         $obj->code = strtoupper(mb_substr(md5(microtime() . $this->makeRandStr(6)), 8, 16));
         $obj->status = 0;
-        $obj->dateline = date('Y-m-d H:i:s', strtotime("+7 days"));
+        $obj->dateline = date('Y-m-d H:i:s', strtotime("+365 days"));
         $obj->save();
 
         return Response::json(['status' => 'success', 'data' => '', 'message' => '生成成功']);

@@ -15,11 +15,11 @@ use App\Http\Models\User;
 class BaseController extends Controller
 {
     // 生成SS密码
-    public function makeRandStr($length = 4)
+    public function makeRandStr($length = 8)
     {
         // 密码字符集，可任意添加你需要的字符
         $chars = 'abcdefghijkmnpqrstuvwxyz23456789';
-        $char = '@';
+        $char = 'j';
         for ($i = 0; $i < $length; $i++) {
             $char .= $chars[mt_rand(0, strlen($chars) - 1)];
         }

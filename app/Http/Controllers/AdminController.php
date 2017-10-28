@@ -1225,7 +1225,7 @@ TXT;
             $obj->fuid = 0;
             $obj->code = strtoupper(substr(md5(microtime() . $this->makeRandStr(6)), 8, 16));
             $obj->status = 0;
-            $obj->dateline = date('Y-m-d H:i:s', strtotime("+ 7days"));
+            $obj->dateline = date('Y-m-d H:i:s', strtotime("+ 365days"));
             $obj->save();
         }
 
