@@ -7,6 +7,8 @@ MYSQL 5.5 （推荐5.6+）
 磁盘空间 10G+
 KVM
 
+PHP必须开启gd2、fileinfo组件
+
 小白建议使用LNMP傻瓜安装出php7.1 + mysql(5.5以上)
 手动编译请看WIKI [编译安装PHP7.1.7环境（CentOS）]
 使用LNMP部署时请到/usr/local/php/etc/php.ini下搜索disable_functions，把proc_开头的函数都删掉
@@ -15,20 +17,20 @@ telegram频道：https://t.me/ssrpanel
 telegram群组：https://t.me/chatssrpanel
 开发测试演示：http://www.ssrpanel.com
 用户名：admin 密码：123456
-(限速100K)
+(请大家勿改admin的密码)
 ````
 
-#### VPS推荐
+![VPS推荐](https://github.com/ssrpanel/ssrpanel/wiki/VPS%E6%8E%A8%E8%8D%90)
 ````
 部署面板必须得用到VPS，也就是服务器
 强烈推荐使用1G以上内存的KVM架构的服务器
 ````
-![VPS推荐](https://github.com/ssrpanel/ssrpanel/wiki/VPS%E6%8E%A8%E8%8D%90)
-
 
 #### 打赏作者
 ````
 如果你觉得这套代码好用，可以请我吃一个巨无霸汉堡，微信扫一下
+我不以此谋生，所以你在使用过程中有发现问题就提issue，有空我会改的
+别搞的我像是欠你钱似的，一个免费的开源的东西，你想要什么功能会的话自己加，不然就别哔哔
 持续开发，喜欢请star一下
 ````
 ![打赏作者](https://github.com/ssrpanel/ssrpanel/blob/master/public/assets/images/donate.jpeg?raw=true)
@@ -47,20 +49,23 @@ telegram群组：https://t.me/chatssrpanel
 |Royal|￥25|
 |bingo|￥8|
 |Eason|￥10|
-截止目前收到的捐赠：￥432
-实际到账：￥427.68 （提款手续费4.32）
+|【要求匿名】|￥60|
+
+截止目前收到的捐赠：￥492，实际到账：￥487.08 （提款手续费4.92）
 
 这些捐赠的用途：
-1.30刀买了1台VPS做开发测试用（后被干扰到几乎无法SSH）
-2.30刀买了一个Beyond Compare 4 Standard的正版激活码
-3.感谢Jyo提供一个台Azure给我开发测试用，需要代购VPS找在tg群里找他
+- 1.30刀买了1台VPS做开发测试用（后被干扰到几乎无法SSH）
+- 2.30刀买了一个Beyond Compare 4 Standard的正版激活码
+- 3.感谢`Jyo`提供一个台Azure给我开发测试用，需要代购VPS找在tg群里找他
+- 4.感谢`izhangxm`提交了自定义等级的分支代码
+- 5.感谢`Hao-Luo`提供的节点一键部署脚本
 
 
 #### 拉取代码
 ````
 cd /home/wwwroot/
 git clone https://github.com/ssrpanel/ssrpanel.git
-```
+````
 
 #### 先配置数据库
 ````
@@ -69,7 +74,7 @@ config\database.php 中的mysql选项自行配置数据库
 ````
 
 #### 配置一下
-```
+````
 cd ssrpanel/
 php composer.phar install
 php artisan key:generate
@@ -130,6 +135,7 @@ chown www:www ssserver.log
 ````
 
 ## SSR部署
+###### 手动部署
 ````
 cp server/ssr-3.4.0.zip /root/
 cd /root
@@ -138,8 +144,27 @@ cd shadowsocksr
 sh initcfg.sh
 把 userapiconfig.py 里的 API_INTERFACE 设置为 glzjinmod
 把 user-config.json 里的 connect_verbose_info 设置为 1
-配置 usermysql.json 里的数据库链接，NODE_ID就是节点ID，对应面板后台里添加的节点的自增ID，所以请先把面板搭好，搭好后再进后台添加节点
+配置 usermysql.json 里的数据库链接，NODE_ID就是节点ID，对应面板后台里添加的节点的自增ID，所以请先把面板搭好，搭好后进后台添加节点
 ````
+
+###### 一键自动部署
+````
+wget -N --no-check-certificate https://raw.githubusercontent.com/ssrpanel/ssrpanel/master/server/deploy_ssr.sh;chmod +x deploy_ssr.sh;./deploy_ssr.sh
+````
+
+## 更新代码
+````
+chmod a+x update.sh && sh update.sh
+
+如果每次更新都会出现数据库文件被覆盖
+请先执行一次 chmod a+x fix_git.sh && sh fix_git.sh
+````
+
+## 网卡流量监控一键脚本
+````
+wget -N --no-check-certificate https://raw.githubusercontent.com/ssrpanel/ssrpanel/master/server/deploy_vnstat.sh;chmod +x deploy_vnstat.sh;./deploy_vnstat.sh
+````
+
 
 ## 说明
 ````

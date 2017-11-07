@@ -44,8 +44,13 @@ return [
             'host' => '127.0.0.1',
             'port' => '3306',
             'database' => 'ssrpanel',
+<<<<<<< HEAD
             'username' => 'username',
-            'password' => 'sxmbKswA3b6VGQjM',
+            'password' => 'Your-Password',
+=======
+            'username' => 'root',
+            'password' => 'root',
+>>>>>>> 77aede3142e95dc7130313b9940483b954b99a32
             'unix_socket' => '',
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',

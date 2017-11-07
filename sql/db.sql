@@ -20,9 +20,9 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 
-# Dump of table ss_node
-# ------------------------------------------------------------
-
+-- ----------------------------
+-- Table structure for `ss_node`
+-- ----------------------------
 CREATE TABLE `ss_node` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(128) NOT NULL DEFAULT '' COMMENT '名称',
@@ -47,10 +47,9 @@ CREATE TABLE `ss_node` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='节点信息表';
 
 
-
-# Dump of table ss_node_info
-# ------------------------------------------------------------
-
+-- ----------------------------
+-- Table structure for `ss_node_info`
+-- ----------------------------
 CREATE TABLE `ss_node_info` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `node_id` int(11) NOT NULL DEFAULT '0' COMMENT '节点ID',
@@ -63,10 +62,9 @@ CREATE TABLE `ss_node_info` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='节点负载信息';
 
 
-
-# Dump of table ss_node_online_log
-# ------------------------------------------------------------
-
+-- ----------------------------
+-- Table structure for `ss_node_online_log`
+-- ----------------------------
 CREATE TABLE `ss_node_online_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `node_id` int(11) NOT NULL COMMENT '节点ID',
@@ -78,10 +76,9 @@ CREATE TABLE `ss_node_online_log` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='节点在线信息';
 
 
-
-# Dump of table user
-# ------------------------------------------------------------
-
+-- ----------------------------
+-- Table structure for `user`
+-- ----------------------------
 CREATE TABLE `user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(128) CHARACTER SET utf8mb4 NOT NULL DEFAULT '' COMMENT '用户名',
@@ -111,7 +108,7 @@ CREATE TABLE `user` (
   `enable_time` date DEFAULT NULL COMMENT '开通日期',
   `expire_time` date NOT NULL DEFAULT '2099-01-01' COMMENT '过期时间',
   `remark` text COMMENT '备注',
-  `level` tinyint(4) NOT NULL DEFAULT '1' COMMENT '等级：1-倔强青铜、2-秩序白银、3-荣耀黄金、4-尊贵铂金、5-永恒钻石、6-至尊黑曜、7-最强王者',
+  `level` tinyint(4) NOT NULL DEFAULT '1' COMMENT '等级：可定义名称',
   `is_admin` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否管理员：0-否、1-是',
   `reg_ip` varchar(20) NOT NULL DEFAULT '127.0.0.1' COMMENT '注册IP',
   `last_login` int(11) NOT NULL DEFAULT '0' COMMENT '最后一次登录时间',
@@ -132,6 +129,30 @@ VALUES (1,'admin','e10adc3949ba59abbe56e057f20f883e',10000,'@123',1073741824000,
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
+
+-- ----------------------------
+-- Table structure for `level`
+-- ----------------------------
+CREATE TABLE `level` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `level` int(11) NOT NULL DEFAULT '1' COMMENT '等级',
+  `level_name` varchar(100) NOT NULL DEFAULT '' COMMENT '等级名称',
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+-- ----------------------------
+-- Records of `level`
+-- ----------------------------
+INSERT INTO `level` VALUES (1, '1', '倔强青铜', '2017-10-26 15:56:52', '2017-10-26 15:38:58');
+INSERT INTO `level` VALUES (2, '2', '秩序白银', '2017-10-26 15:57:30', '2017-10-26 12:37:51');
+INSERT INTO `level` VALUES (3, '3', '荣耀黄金', '2017-10-26 15:41:31', '2017-10-26 15:41:31');
+INSERT INTO `level` VALUES (4, '4', '尊贵铂金', '2017-10-26 15:41:38', '2017-10-26 15:41:38');
+INSERT INTO `level` VALUES (5, '5', '永恒钻石', '2017-10-26 15:41:47', '2017-10-26 15:41:47');
+INSERT INTO `level` VALUES (6, '6', '至尊黑曜', '2017-10-26 15:41:56', '2017-10-26 15:41:56');
+INSERT INTO `level` VALUES (7, '7', '最强王者', '2017-10-26 15:42:02', '2017-10-26 15:42:02');
 
 -- ----------------------------
 -- Table structure for `user_traffic_log`
@@ -247,6 +268,9 @@ INSERT INTO `config` VALUES ('26', 'expire_days', 15);
 INSERT INTO `config` VALUES ('27', 'reset_traffic', 1);
 INSERT INTO `config` VALUES ('28', 'default_days', 7);
 INSERT INTO `config` VALUES ('29', 'subscribe_max', 3);
+INSERT INTO `config` VALUES ('30', 'min_port', 10000);
+INSERT INTO `config` VALUES ('31', 'max_port', 40000);
+INSERT INTO `config` VALUES ('32', 'is_captcha', 0);
 
 
 -- ----------------------------
@@ -254,14 +278,15 @@ INSERT INTO `config` VALUES ('29', 'subscribe_max', 3);
 -- ----------------------------
 CREATE TABLE `article` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `title` varchar(100) NOT NULL DEFAULT '' COMMENT '文章标题',
-  `content` text COMMENT '文章内容',
+  `title` varchar(100) NOT NULL DEFAULT '' COMMENT '标题',
+  `author` varchar(255) DEFAULT '' COMMENT '作者',
+  `content` text COMMENT '内容',
   `is_del` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否删除',
   `sort` int(11) NOT NULL DEFAULT '0' COMMENT '排序',
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='文章表';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
 
 
 -- ----------------------------
@@ -573,6 +598,41 @@ CREATE TABLE `user_subscribe_log` (
   `request_header` text COMMENT '请求头部信息',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+-- ----------------------------
+-- Table structure for `user_traffic_daily`
+-- ----------------------------
+CREATE TABLE `user_traffic_daily` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL DEFAULT '0' COMMENT '用户ID',
+  `node_id` int(11) NOT NULL DEFAULT '0' COMMENT '节点ID，0表示统计全部节点',
+  `u` bigint(20) NOT NULL DEFAULT '0' COMMENT '上传流量',
+  `d` bigint(20) NOT NULL DEFAULT '0' COMMENT '下载流量',
+  `total` bigint(20) NOT NULL DEFAULT '0' COMMENT '总流量',
+  `traffic` varchar(255) DEFAULT '' COMMENT '总流量（带单位）',
+  `created_at` datetime DEFAULT NULL COMMENT '创建时间',
+  `updated_at` datetime DEFAULT NULL COMMENT '最后一起更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
+
+
+-- ----------------------------
+-- Table structure for `user_traffic_hourly`
+-- ----------------------------
+CREATE TABLE `user_traffic_hourly` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL DEFAULT '0' COMMENT '用户ID',
+  `node_id` int(11) NOT NULL DEFAULT '0' COMMENT '节点ID，0表示统计全部节点',
+  `u` bigint(20) NOT NULL DEFAULT '0' COMMENT '上传流量',
+  `d` bigint(20) NOT NULL DEFAULT '0' COMMENT '下载流量',
+  `total` bigint(20) NOT NULL DEFAULT '0' COMMENT '总流量',
+  `traffic` varchar(255) DEFAULT '' COMMENT '总流量（带单位）',
+  `created_at` datetime DEFAULT NULL COMMENT '创建时间',
+  `updated_at` datetime DEFAULT NULL COMMENT '最后一起更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
+
 
 
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;

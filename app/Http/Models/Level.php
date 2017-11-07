@@ -5,20 +5,16 @@ namespace App\Http\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * 文章
- * Class Article
+ * 等级信息
+ * Class Level
  * @package App\Http\Models
  */
-class Article extends Model
+class Level extends Model
 {
-    protected $table = 'article';
+    protected $table = 'level';
     protected $primaryKey = 'id';
     protected $fillable = [
-        'title',
-        'author',
-        'content',
-        'is_del',
-        'sort'
+        'level',
+        'level_name'
     ];
-
 }

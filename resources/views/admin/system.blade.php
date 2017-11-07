@@ -107,6 +107,13 @@
                                                             <span class="help-block"> 启用后用户可以通过邮件重置密码 </span>
                                                         </div>
                                                     </div>
+                                                    <div class="form-group">
+                                                        <label for="is_captcha" class="col-md-2 control-label">验证码</label>
+                                                        <div class="col-md-6">
+                                                            <input type="checkbox" class="make-switch" @if($is_captcha) checked @endif id="is_captcha" data-on-color="success" data-off-color="danger" data-on-text="启用" data-off-text="关闭">
+                                                            <span class="help-block"> 启用后登录、注册需要输入验证码 </span>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </form>
                                         </div>
@@ -118,6 +125,16 @@
                                                         <div class="col-md-6">
                                                             <input type="checkbox" class="make-switch" @if($is_rand_port) checked @endif id="is_rand_port" data-on-color="success" data-off-color="danger" data-on-text="启用" data-off-text="关闭">
                                                             <span class="help-block"> 添加账号时随机生成端口 </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-2 control-label">端口范围</label>
+                                                        <div class="col-md-2">
+                                                            <div class="input-group input-large input-daterange">
+                                                                <input type="text" class="form-control" name="min_port" value="{{$min_port}}" id="min_port">
+                                                                <span class="input-group-addon"> ~ </span>
+                                                                <input type="text" class="form-control" name="max_port" value="{{$max_port}}" id="max_port">
+                                                            </div>
                                                         </div>
                                                     </div>
                                                     <!--
@@ -498,6 +515,21 @@
             }
         });
 
+        // 启用、禁用验证码
+        $('#is_captcha').on({
+            'switchChange.bootstrapSwitch': function(event, state) {
+                var is_captcha = state ? 1 : 0;
+
+                $.post("{{url('admin/setConfig')}}", {_token:'{{csrf_token()}}', name:'is_captcha', value:is_captcha}, function (ret) {
+                    if (ret.status == 'fail') {
+                        layer.msg(ret.message, {time:1000}, function() {
+                            window.location.reload();
+                        });
+                    }
+                });
+            }
+        });
+
         // 启用、禁用用户激活账号
         $('#is_active_register').on({
             'switchChange.bootstrapSwitch': function(event, state) {
@@ -570,11 +602,11 @@
             var min_rand_score = $(this).val();
 
             $.post("{{url('admin/setConfig')}}", {_token:'{{csrf_token()}}', name:'min_rand_score', value:min_rand_score}, function (ret) {
-                if (ret.status == 'fail') {
-                    layer.msg(ret.message, {time:1000}, function() {
+                layer.msg(ret.message, {time:1000}, function() {
+                    if (ret.status == 'fail') {
                         window.location.reload();
-                    });
-                }
+                    }
+                });
             });
         });
 
@@ -583,11 +615,54 @@
             var max_rand_score = $(this).val();
 
             $.post("{{url('admin/setConfig')}}", {_token:'{{csrf_token()}}', name:'max_rand_score', value:max_rand_score}, function (ret) {
-                if (ret.status == 'fail') {
-                    layer.msg(ret.message, {time:1000}, function() {
+                layer.msg(ret.message, {time:1000}, function() {
+                    if (ret.status == 'fail') {
                         window.location.reload();
-                    });
-                }
+                    }
+                });
+            });
+        });
+
+        // 设置最小端口
+        $("#min_port").change(function () {
+            var min_port = $(this).val();
+
+            if (parseInt(min_port) < 1000) {
+                layer.msg('最小端口不能小于1000', {time:1000});
+                return ;
+            }
+
+            $.post("{{url('admin/setConfig')}}", {_token:'{{csrf_token()}}', name:'min_port', value:min_port}, function (ret) {
+                layer.msg(ret.message, {time:1000}, function() {
+                    if (ret.status == 'fail') {
+                        window.location.reload();
+                    }
+                });
+            });
+        });
+
+        // 设置最大端口
+        $("#max_port").change(function () {
+            var min_port = $("#min_port").val();
+            var max_port = $(this).val();
+
+            // 最大端口必须大于最小端口
+            if (parseInt(max_port) <= parseInt(min_port)) {
+                layer.msg('必须大于最小端口', {time:1000});
+                return ;
+            }
+
+            if (parseInt(max_port) > 65535) {
+                layer.msg('最大端口不能大于65535', {time:1000});
+                return ;
+            }
+
+            $.post("{{url('admin/setConfig')}}", {_token:'{{csrf_token()}}', name:'max_port', value:max_port}, function (ret) {
+                layer.msg(ret.message, {time:1000}, function() {
+                    if (ret.status == 'fail') {
+                        window.location.reload();
+                    }
+                });
             });
         });
 

@@ -8,6 +8,7 @@ use App\Http\Models\User;
 use App\Http\Models\Verify;
 use Illuminate\Http\Request;
 use App\Mail\activeUser;
+use Captcha;
 use Response;
 use Redirect;
 use Mail;
@@ -33,6 +34,7 @@ class RegisterController extends BaseController
             $username = trim($request->get('username'));
             $password = trim($request->get('password'));
             $repassword = trim($request->get('repassword'));
+            $captcha = trim($request->get('captcha'));
             $code = trim($request->get('code'));
             $aff = intval($request->get('aff', 0));
 
@@ -58,6 +60,15 @@ class RegisterController extends BaseController
                 return Redirect::back()->withInput();
             }
 
+            // 是否校验验证码
+            if (self::$config['is_captcha']) {
+                if (!Captcha::check($captcha)) {
+                    $request->session()->flash('errorMsg', '验证码错误，请重新输入');
+
+                    return Redirect::back()->withInput($request->except(['password', 'repassword']));
+                }
+            }
+
             // 是否开启注册
             if (!self::$config['is_register']) {
                 $request->session()->flash('errorMsg', '系统维护暂停注册，如需账号请联系管理员');
@@ -74,7 +85,7 @@ class RegisterController extends BaseController
                 }
 
                 // 校验邀请码合法性
-                $code = Invite::where('code', $code)->where('status', 0)->first();
+                $code = Invite::query()->where('code', $code)->where('status', 0)->first();
                 if (empty($code)) {
                     $request->session()->flash('errorMsg', '邀请码不可用，请更换邀请码后重试');
 
@@ -83,7 +94,7 @@ class RegisterController extends BaseController
             }
 
             // 校验用户名是否已存在
-            $exists = User::where('username', $username)->first();
+            $exists = User::query()->where('username', $username)->first();
             if ($exists) {
                 $request->session()->flash('errorMsg', '用户名已存在，请更换用户名');
 
@@ -92,20 +103,20 @@ class RegisterController extends BaseController
 
             // 校验aff对应账号是否存在
             if ($aff) {
-                $affUser = User::where('id', $aff)->first();
+                $affUser = User::query()->where('id', $aff)->first();
                 $referral_uid = $affUser ? $aff : 0;
             } else {
                 $referral_uid = 0;
             }
 
             // 最后一个可用端口
-            $last_user = User::orderBy('id', 'desc')->first();
+            $last_user = User::query()->orderBy('id', 'desc')->first();
             $port = self::$config['is_rand_port'] ? $this->getRandPort() : $last_user->port + 1;
 
             // 默认加密方式、协议、混淆
-            $method = SsConfig::where('type', 1)->where('is_default', 1)->first();
-            $protocol = SsConfig::where('type', 2)->where('is_default', 1)->first();
-            $obfs = SsConfig::where('type', 3)->where('is_default', 1)->first();
+            $method = SsConfig::query()->where('type', 1)->where('is_default', 1)->first();
+            $protocol = SsConfig::query()->where('type', 2)->where('is_default', 1)->first();
+            $obfs = SsConfig::query()->where('type', 3)->where('is_default', 1)->first();
 
             // 创建新用户
             $transfer_enable = $referral_uid ? (self::$config['default_traffic'] + self::$config['referral_traffic']) * 1048576 : self::$config['default_traffic'] * 1048576;
@@ -126,7 +137,7 @@ class RegisterController extends BaseController
 
             // 更新邀请码
             if (self::$config['is_invite_register'] && $user->id) {
-                Invite::where('id', $code->id)->update(['fuid' => $user->id, 'status' => 1]);
+                Invite::query()->where('id', $code->id)->update(['fuid' => $user->id, 'status' => 1]);
             }
 
             // 发送邮件
@@ -158,6 +169,7 @@ class RegisterController extends BaseController
 
             return Redirect::to('login');
         } else {
+            $view['is_captcha'] = self::$config['is_captcha'];
             $view['is_register'] = self::$config['is_register'];
             $view['is_invite_register'] = self::$config['is_invite_register'];
 

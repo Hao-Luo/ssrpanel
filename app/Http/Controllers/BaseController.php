@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Models\Config;
 use App\Http\Models\EmailLog;
+use App\Http\Models\Level;
 use App\Http\Models\SsConfig;
 use App\Http\Models\User;
 
@@ -83,25 +84,31 @@ class BaseController extends Controller
     // 加密方式
     public function methodList()
     {
-        return SsConfig::where('type', 1)->get();
+        return SsConfig::query()->where('type', 1)->get();
     }
 
     // 协议
     public function protocolList()
     {
-        return SsConfig::where('type', 2)->get();
+        return SsConfig::query()->where('type', 2)->get();
     }
 
     // 混淆
     public function obfsList()
     {
-        return SsConfig::where('type', 3)->get();
+        return SsConfig::query()->where('type', 3)->get();
+    }
+
+    // 等级
+    public function levelList()
+    {
+        return Level::query()->get()->sortBy('level');
     }
 
     // 系统配置
     public function systemConfig()
     {
-        $config = Config::get();
+        $config = Config::query()->get();
         $data = [];
         foreach ($config as $vo) {
             $data[$vo->name] = $vo->value;
@@ -110,25 +117,13 @@ class BaseController extends Controller
         return $data;
     }
 
-    // 账号等级对应名称
-    public function userLevelConfig()
-    {
-        return [
-            1 => '倔强青铜',
-            2 => '秩序白银',
-            3 => '荣耀黄金',
-            4 => '尊贵铂金',
-            5 => '永恒钻石',
-            6 => '至尊黑曜',
-            7 => '最强王者'
-        ];
-    }
-
     // 获取一个随机端口
     public function getRandPort()
     {
-        $port = mt_rand(10000, 40000);
-        $deny_port = [17185, 28281];
+        $config = $this->systemConfig();
+
+        $port = mt_rand($config['min_port'], $config['max_port']);
+        $deny_port = [1068, 1434, 3127, 3128, 3129, 3130, 3332, 4444, 5554, 6669, 8080, 8081, 8082, 8181, 8282, 9996, 17185, 28281]; // 不生成的端口
 
         $exists_port = User::query()->pluck('port')->toArray();
         if (in_array($port, $exists_port) || in_array($port, $deny_port)) {
